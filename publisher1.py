@@ -10,7 +10,7 @@ import json
 #Dati
 topic = 'home/misurazioni/'
 topic_mongo = 'atlas/mongodb/case'
-BROKER_HOST = '192.168.5.37'
+BROKER_HOST ='80.210.122.173'
 PORTA_BROKER = 1883
 
 #----------------------------------------------
