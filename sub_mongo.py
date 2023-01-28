@@ -9,7 +9,7 @@ from json import *
 #------------------------------------------------
 #Dati
 topic = 'atlas/mongodb/case'
-BROKER_HOST =  '80.210.122.173'
+BROKER_HOST =  '192.168.5.37'
 PORTA_BROKER = 1883
 
 #---------------------------------------------
