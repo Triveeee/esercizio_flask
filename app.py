@@ -15,7 +15,7 @@ db = atlas.cluster0
 collection = db.case
 
 # configurazione Mqtt Server
-app.config['MQTT_BROKER_URL'] = '80.210.122.173'
+app.config['MQTT_BROKER_URL'] = '192.167.5.37'
 app.config['MQTT_BROKER_PORT'] = 1883
 #
 
