@@ -15,19 +15,8 @@ db = atlas.cluster0
 collection = db.case
 
 # configurazione Mqtt Server
-app.config['MQTT_BROKER_URL'] = '192.168.5.37'
+app.config['MQTT_BROKER_URL'] = '80.210.122.173'
 app.config['MQTT_BROKER_PORT'] = 1883
-#
-
-#function
-def findLastElement(n_element , casa):
-    objects = []
-    items = collection.find({"payload.casa": casa})
-    for i in list(items):
-        objects.append(i)
-    print(items)
-    objects = objects [(len(objects) - n_element): ]
-    return(objects)
 #
 
 mqtt = Mqtt(app)
@@ -41,24 +30,35 @@ chiave_valore = Fernet(chiave)
 
 #lettura file
 f = open('casa.config.txt' , 'r')
-list = f.read().split(' = ')
+lista = f.read().split(' = ')
 #
 
 #parametri
-casa = list[1]
+casa = lista[1]
 topic = 'home/misurazioni/' + casa
 refresh = 5
-dati = {
-    "casa": 0,
-    "data": "",
-    "tempo": "",
-    "stanze": {
-        "cucina": {"temperatura": 0, "umidita": 0},
-        "soggiorno": {"temperatura": 0, "umidita": 0 },
-        "mansarda": {"temperatura": 0 , "umidita": 0 },
-        "camera_da_letto": {"temperatura": 0 , "umidita": 0}
-    }
-} 
+#
+#dati = {
+#    "casa": 0,
+#    "data": "",
+#    "tempo": "",
+#    "stanze": {
+#        "cucina": {"temperatura": 0, "umidita": 0},
+#        "soggiorno": {"temperatura": 0, "umidita": 0 },
+#        "mansarda": {"temperatura": 0 , "umidita": 0 },
+#        "camera_da_letto": {"temperatura": 0 , "umidita": 0}
+#    }
+#}
+
+
+#function
+def findLastElement(n_element , casa):
+    print(casa)
+    items = collection.find({"payload.casa": int(casa)})
+    items = list(items)
+    items = items[(len(items) - n_element): ]
+    return(items)
+#
 
 
 @app.route('/home')
@@ -78,12 +78,14 @@ def table(param):
     datas = []
     template = 'table.html'
     items = findLastElement(5 , casa)
-    print(items)
+
     for item in items:
-        time = item['data']
-        data = item['stanze'][param]
+        payload = item['payload']
+        time = payload['data']
+        data = payload['stanze'][param]
         data = {**data , "tempo": time}
-        dati.append(data)
+        datas.append(data)
+
     return render_template(template ,  dati=datas)
 
 @mqtt.on_connect()
@@ -97,7 +99,6 @@ def gestione_messaggio(client , userdata , msg):
     dati_json_bytes = chiave_valore.decrypt(dati_criptati) # <--- decriptazione del messaggio in bytes (string criptato-> bytes decriptato)
     dati_json = dati_json_bytes.decode('utf-8')
     dati = json.loads(dati_json)
-    print(dati)
     return(dati_json)
 
 
